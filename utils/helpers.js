@@ -50,3 +50,34 @@ export const generateSessionId = (ip, userAgent = '') => {
     .digest('hex');
   return `ip_${hash.substring(0, 16)}`;
 };
+
+import Plan from '../models/Plan.js';
+
+export const generateRandomPlanInfo = async () => {
+  const [plan] = await Plan.aggregate([
+    {
+      $match: {
+        category: { $in: ['5G/LTE 요금제', '온라인 다이렉트 요금제'] },
+      },
+    },
+    { $sample: { size: 1 } },
+  ]);
+
+  if (!plan) {
+    throw new Error('랜덤 요금제를 찾을 수 없습니다.');
+  }
+
+  let membership = '우수';
+  if (plan.price >= 95000) membership = 'VVIP';
+  else if (plan.price >= 74800) membership = 'VIP';
+
+  const yearOptions = ['10년 이상', '5년 이상', '2년 이상', null];
+  const years = yearOptions[Math.floor(Math.random() * yearOptions.length)];
+
+  return {
+    title: plan.title,
+    price: plan.price,
+    membership,
+    years,
+  };
+};

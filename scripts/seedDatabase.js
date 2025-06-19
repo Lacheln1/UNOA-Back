@@ -4,11 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import Plan from '../models/Plan.js';
 
-// .env 파일에서 MONGO_URI 같은 환경 변수를 로드합니다.
 dotenv.config();
 
 /**
- * JSON의 원본 데이터를 Mongoose 스키마에 맞게 변환하고 정제하는 함수입니다.
+ * JSON의 원본 데이터를 Mongoose 스키마에 맞게 변환하고 정제하는 함수
  * @param {object} plan - 원본 요금제 객체
  * @param {string} category - 카테고리 이름
  * @returns {object} 스키마에 맞는 형태로 변환된 객체
@@ -32,12 +31,10 @@ const transformPlan = (plan, category) => {
 const seedDB = async () => {
   let connection; // finally 블록에서 사용하기 위해 외부에 변수 선언
   try {
-    // 1. 데이터 소스 파일 읽기
     const dataPath = path.resolve(process.cwd(), 'data', 'initialPlans.json');
     const jsonData = fs.readFileSync(dataPath, 'utf-8');
     const planDatabase = JSON.parse(jsonData);
 
-    // 2. 데이터 가공
     const allPlansToSeed = [
       ...(planDatabase['5GLTE'] || []).map((p) =>
         transformPlan(p, '5G/LTE 요금제')
@@ -53,14 +50,13 @@ const seedDB = async () => {
       ),
     ];
 
-    // 3. 데이터 유효성 검사 (데이터가 없을 경우 스크립트 중단)
     if (allPlansToSeed.length === 0) {
       throw new Error(
         '처리할 데이터가 0개입니다. JSON 파일 내용을 확인하세요.'
       );
     }
 
-    // 4. 데이터베이스 연결 및 작업 수행
+    // 데이터베이스 연결 및 작업 수행
     console.log('MongoDB에 연결을 시도합니다...');
     connection = await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB에 성공적으로 연결되었습니다.');

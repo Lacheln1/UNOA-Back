@@ -38,7 +38,6 @@ const conversationSchema = new mongoose.Schema({
       type: Date,
       default: Date.now,
     },
-    // ✨ mode 필드를 여기에 추가합니다. ✨
     mode: {
       type: String,
       enum: ['normal', 'simple'],

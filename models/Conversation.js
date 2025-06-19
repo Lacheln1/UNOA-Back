@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
-import crypto from "crypto";
+import mongoose from 'mongoose';
+import crypto from 'crypto';
 
 const messageSchema = new mongoose.Schema({
   role: {
     type: String,
-    enum: ["user", "assistant", "system"],
+    enum: ['user', 'assistant', 'system'],
     required: true,
   },
   content: {
@@ -41,14 +41,14 @@ const conversationSchema = new mongoose.Schema({
     // ✨ mode 필드를 여기에 추가합니다. ✨
     mode: {
       type: String,
-      enum: ["normal", "simple"],
-      default: "normal",
+      enum: ['normal', 'simple'],
+      default: 'normal',
     },
     recommendedPlans: [String],
     sessionType: {
       type: String,
-      default: "ip_based",
-      enum: ["ip_based", "user_generated", "anonymous"],
+      default: 'ip_based',
+      enum: ['ip_based', 'user_generated', 'anonymous'],
     },
     totalInteractions: {
       type: Number,
@@ -69,11 +69,11 @@ const conversationSchema = new mongoose.Schema({
 // 인덱스 설정
 conversationSchema.index({ updatedAt: -1 });
 conversationSchema.index({ createdAt: -1 });
-conversationSchema.index({ "metadata.ipAddress": 1 });
-conversationSchema.index({ "metadata.lastAccessTime": -1 });
+conversationSchema.index({ 'metadata.ipAddress': 1 });
+conversationSchema.index({ 'metadata.lastAccessTime': -1 });
 
 // 미들웨어: 업데이트 시 updatedAt 자동 갱신
-conversationSchema.pre("save", function (next) {
+conversationSchema.pre('save', function (next) {
   this.updatedAt = new Date();
 
   // 메시지 수 업데이트
@@ -89,10 +89,10 @@ conversationSchema.methods.getSummary = function () {
   return {
     sessionId: this.sessionId,
     messageCount: this.messages.length,
-    firstMessage: this.messages[0]?.content || "",
-    lastMessage: this.messages[this.messages.length - 1]?.content || "",
+    firstMessage: this.messages[0]?.content || '',
+    lastMessage: this.messages[this.messages.length - 1]?.content || '',
     duration: this.updatedAt - this.createdAt,
-    ipAddress: this.metadata?.ipAddress || "unknown",
+    ipAddress: this.metadata?.ipAddress || 'unknown',
     lastAccess: this.metadata?.lastAccessTime || this.updatedAt,
   };
 };
@@ -128,11 +128,11 @@ conversationSchema.statics.cleanOldConversations = async function (
 };
 
 // 정적 메서드: IP별 대화 찾기
-conversationSchema.statics.findByIP = async function (ip, userAgent = "") {
+conversationSchema.statics.findByIP = async function (ip, userAgent = '') {
   const hash = crypto
-    .createHash("sha256")
+    .createHash('sha256')
     .update(ip + userAgent)
-    .digest("hex");
+    .digest('hex');
   const sessionId = `ip_${hash.substring(0, 16)}`;
 
   return await this.findOne({ sessionId: sessionId });
@@ -154,9 +154,9 @@ conversationSchema.statics.getActiveStats = async function (
       $group: {
         _id: null,
         totalActiveConversations: { $sum: 1 },
-        totalMessages: { $sum: { $size: "$messages" } },
-        uniqueIPs: { $addToSet: "$metadata.ipAddress" },
-        avgMessagesPerConversation: { $avg: { $size: "$messages" } },
+        totalMessages: { $sum: { $size: '$messages' } },
+        uniqueIPs: { $addToSet: '$metadata.ipAddress' },
+        avgMessagesPerConversation: { $avg: { $size: '$messages' } },
       },
     },
     {
@@ -164,9 +164,9 @@ conversationSchema.statics.getActiveStats = async function (
         _id: 0,
         totalActiveConversations: 1,
         totalMessages: 1,
-        uniqueIPCount: { $size: "$uniqueIPs" },
+        uniqueIPCount: { $size: '$uniqueIPs' },
         avgMessagesPerConversation: {
-          $round: ["$avgMessagesPerConversation", 2],
+          $round: ['$avgMessagesPerConversation', 2],
         },
       },
     },
@@ -185,7 +185,7 @@ conversationSchema.statics.getActiveStats = async function (
 // 정적 메서드: IP별 사용 패턴 분석
 conversationSchema.statics.analyzeIPUsage = async function (ip) {
   const conversations = await this.find({
-    "metadata.ipAddress": ip,
+    'metadata.ipAddress': ip,
   }).sort({ createdAt: -1 });
 
   if (conversations.length === 0) {
@@ -215,6 +215,6 @@ conversationSchema.statics.analyzeIPUsage = async function (ip) {
   };
 };
 
-const Conversation = mongoose.model("Conversation", conversationSchema);
+const Conversation = mongoose.model('Conversation', conversationSchema);
 
 export default Conversation;

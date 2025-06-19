@@ -1,13 +1,13 @@
-import express from "express";
-import cors from "cors";
-import http from "http";
-import { Server } from "socket.io";
-import dotenv from "dotenv";
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
+import dotenv from 'dotenv';
 
 // 로컬 모듈 import
-import { connectDatabase } from "./config/database.js";
-import { setupSocketConnection } from "./handlers/socketHandlers.js";
-import apiRoutes from "./routes/apiRoutes.js";
+import { connectDatabase } from './config/database.js';
+import { setupSocketConnection } from './handlers/socketHandlers.js';
+import apiRoutes from './routes/apiRoutes.js';
 
 // 환경 변수 로드
 dotenv.config();
@@ -18,8 +18,8 @@ const server = http.createServer(app);
 // Socket.IO 설정
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
   },
 });
 
@@ -31,7 +31,7 @@ app.use(cors());
 app.use(express.json());
 
 // API 라우트 설정
-app.use("/api", apiRoutes);
+app.use('/api', apiRoutes);
 
 // Socket.IO 연결 설정
 setupSocketConnection(io);
@@ -40,6 +40,6 @@ setupSocketConnection(io);
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 ${PORT}포트에서 서버 작동 중...`);
-  console.log(`📍 환경: ${process.env.NODE_ENV || "development"}`);
+  console.log(`📍 환경: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 API 엔드포인트: http://localhost:${PORT}/api`);
 });

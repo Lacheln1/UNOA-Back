@@ -1,8 +1,12 @@
 import express from 'express';
-import { registerUser } from '../controllers/authController.js';
+import {
+  registerUser,
+  checkUserIdDuplicate,
+} from '../controllers/authController.js';
 
 const router = express.Router();
 
 router.post('/register', registerUser);
+router.get('/check-id', checkUserIdDuplicate);
 
 export default router;

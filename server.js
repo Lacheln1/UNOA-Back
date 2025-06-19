@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 
 // 로컬 모듈 import
 import { connectDatabase } from "./config/database.js";
+import authRoutes from "./routes/authRoutes.js";
 import { setupSocketConnection } from "./handlers/socketHandlers.js";
 import apiRoutes from "./routes/apiRoutes.js";
 
@@ -29,6 +30,9 @@ await connectDatabase();
 // 미들웨어 설정
 app.use(cors());
 app.use(express.json());
+
+// 회원가입 라우터 연결 (/api/auth/register)
+app.use("/api/auth", authRoutes);
 
 // API 라우트 설정
 app.use("/api", apiRoutes);

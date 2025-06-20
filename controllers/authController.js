@@ -1,6 +1,8 @@
-import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { generateRandomPlanInfo } from '../utils/helpers.js';
+import { secretKey, tokenLife, cookieOptions } from '../config/jwt.js';
 
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
 
@@ -65,5 +67,57 @@ export const checkUserIdDuplicate = async (req, res) => {
   } catch (err) {
     console.error('아이디 중복 확인 실패:', err);
     return res.status(500).json({ message: '서버 오류' });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  try {
+    const { userId, password } = req.body;
+
+    // 1. 사용자 존재 여부 확인
+    const user = await User.findOne({ userId });
+    if (!user) {
+      return res.status(401).json({ message: '존재하지 않는 아이디입니다.' });
+    }
+
+    // 2. 비밀번호 일치 확인
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
+    }
+
+    // 3. JWT 생성
+    const payload = { id: user._id, userId: user.userId };
+    const token = jwt.sign(payload, secretKey, {
+      expiresIn: tokenLife,
+    });
+
+    // 4. 쿠키에 JWT 저장
+    res.cookie('access_token', token, cookieOptions).status(200).json({
+      message: '로그인 성공',
+    });
+  } catch (err) {
+    console.error('로그인 중 에러:', err);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(
+      'name userId isUplus planInfo'
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    res.status(200).json({
+      message: '사용자 정보 조회 성공',
+      user,
+    });
+  } catch (err) {
+    console.error('/me 에러:', err);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 };

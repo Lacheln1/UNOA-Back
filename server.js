@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import http from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
@@ -27,9 +28,17 @@ const io = new Server(server, {
 // 데이터베이스 연결
 await connectDatabase();
 
+// CORS 설정
+app.use(
+  cors({
+    origin: [process.env.FRONTEND_URL],
+    credentials: true,
+  })
+);
+
 // 미들웨어 설정
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // 회원가입 라우터 연결 (/api/auth/register)
 app.use('/api/auth', authRoutes);

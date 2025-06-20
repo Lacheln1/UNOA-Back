@@ -1,6 +1,8 @@
-import bcrypt from 'bcryptjs';
 import { User } from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { generateRandomPlanInfo } from '../utils/helpers.js';
+import { secretKey, tokenLife, cookieOptions } from '../config/jwt.js';
 
 const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
 
@@ -84,10 +86,18 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
     }
 
-    // 3. 로그인 성공
-    res.status(200).json({ message: '로그인 성공' });
-  } catch (error) {
-    console.error('로그인 중 에러:', error);
+    // 3. JWT 생성
+    const payload = { id: user._id, userId: user.userId };
+    const token = jwt.sign(payload, secretKey, {
+      expiresIn: tokenLife,
+    });
+
+    // 4. 쿠키에 JWT 저장
+    res.cookie('access_token', token, cookieOptions).status(200).json({
+      message: '로그인 성공',
+    });
+  } catch (err) {
+    console.error('로그인 중 에러:', err);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 };

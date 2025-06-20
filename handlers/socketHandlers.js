@@ -52,7 +52,7 @@ const handleUserMessage = async (socket, data) => {
 
     // OpenAI 스트리밍 API 호출
     const stream = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4.1-mini',
       messages: messagesToSent,
       stream: true,
     });

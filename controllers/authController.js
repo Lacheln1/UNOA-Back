@@ -121,3 +121,15 @@ export const getMe = async (req, res) => {
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 };
+
+export const logoutUser = (req, res) => {
+  const expiredCookieOptions = {
+    ...cookieOptions,
+    maxAge: 0,
+  };
+
+  res
+    .cookie('access_token', '', expiredCookieOptions)
+    .status(200)
+    .json({ message: '로그아웃 되었습니다.' });
+};

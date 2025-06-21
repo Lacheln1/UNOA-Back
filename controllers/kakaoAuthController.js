@@ -39,12 +39,8 @@ export const kakaoCallback = async (req, res) => {
       },
     });
 
-    const {
-      id: kakaoId,
-      properties: { nickname },
-      kakao_account: { name: kakaoName },
-    } = userResponse.data;
-    const name = kakaoName || nickname;
+    const { id: kakaoId, kakao_account } = userResponse.data;
+    const name = kakao_account?.profile?.nickname;
 
     if (!name)
       return res

@@ -18,8 +18,15 @@ const planInfoSchema = new Schema({
 const userSchema = new Schema(
   {
     name: { type: String, required: true },
-    userId: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    userId: { type: String, unique: true, sparse: true },
+    password: {
+      type: String,
+      required: function () {
+        return !this.kakaoId;
+      },
+    },
+    kakaoId: { type: String, unique: true, sparse: true },
+    provider: { type: String, enum: ['local', 'kakao'], default: 'local' },
     isUplus: { type: Boolean, default: false },
     planInfo: {
       type: planInfoSchema,

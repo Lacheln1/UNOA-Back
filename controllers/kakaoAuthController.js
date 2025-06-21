@@ -5,16 +5,13 @@ import { secretKey, tokenLife, cookieOptions } from '../config/jwt.js';
 import { kakaoConfig } from '../config/oauth.js';
 
 export const kakaoLogin = (req, res) => {
-  console.log('kakaoConfig:', kakaoConfig);
   const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoConfig.clientID}&redirect_uri=${kakaoConfig.callbackURI}&response_type=code`;
 
-  console.log('kakaoAuthURL:', kakaoAuthURL);
   res.redirect(kakaoAuthURL);
 };
 
 export const kakaoCallback = async (req, res) => {
   const { code } = req.query;
-  console.log('인증 코드:', code);
 
   try {
     const params = new URLSearchParams();
@@ -34,7 +31,6 @@ export const kakaoCallback = async (req, res) => {
       }
     );
 
-    console.log('토큰 응답:', tokenResponse.data);
     const { access_token } = tokenResponse.data;
 
     const userResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
@@ -43,7 +39,6 @@ export const kakaoCallback = async (req, res) => {
       },
     });
 
-    console.log('사용자 정보:', userResponse.data);
     const {
       id: kakaoId,
       properties: { nickname },
@@ -66,9 +61,6 @@ export const kakaoCallback = async (req, res) => {
       });
 
       await user.save();
-      console.log('새 사용자 생성 완료:', user);
-    } else {
-      console.log('기존 사용자 로그인:', user);
     }
 
     const token = jwt.sign({ id: user._id, name: user.name }, secretKey, {

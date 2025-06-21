@@ -123,6 +123,13 @@ export const getMe = async (req, res) => {
 };
 
 export const logoutUser = (req, res) => {
-  res.clearCookie('access_token', { path: '/' });
-  res.status(200).json({ message: '로그아웃 되었습니다.' });
+  const expiredCookieOptions = {
+    ...cookieOptions,
+    maxAge: 0,
+  };
+
+  res
+    .cookie('access_token', '', expiredCookieOptions)
+    .status(200)
+    .json({ message: '로그아웃 되었습니다.' });
 };

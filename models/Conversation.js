@@ -4,12 +4,17 @@ import crypto from 'crypto';
 const messageSchema = new mongoose.Schema({
   role: {
     type: String,
-    enum: ['user', 'assistant', 'system'],
+    enum: ["user", "assistant", "system"],
     required: true,
   },
   content: {
     type: String,
     required: true,
+  },
+  // 추천 카드 데이터를 저장할 새로운 필드를 추가
+  recommendedPlans: {
+    type: [Object], // 요금제 데이터 객체들의 배열을 저장
+    default: undefined,
   },
   timestamp: {
     type: Date,

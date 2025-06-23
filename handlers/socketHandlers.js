@@ -4,7 +4,10 @@ import crypto from 'crypto';
 import Plan from '../models/Plan.js';
 import Conversation from '../models/Conversation.js';
 import { getClientIP } from '../utils/helpers.js';
-import { generateSystemPrompt } from '../services/promptService.js';
+import {
+  generateSimpleModePrompt,
+  generateSystemPrompt,
+} from '../services/promptService.js';
 
 dotenv.config();
 
@@ -52,7 +55,71 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
     const { text, history, mode } = data;
     const sessionId = getSessionIdForUser(clientIP, userAgent);
 
-    if (mode === 'simple') return;
+    if (mode === 'simple') {
+      console.log('간단 모드 메시지 수신. AI 응답을 생성하지 않습니다.');
+      const dynamicSystemPrompt = await generateSimpleModePrompt();
+
+      const messagesToSent = [
+        {
+          role: 'system',
+          content: dynamicSystemPrompt,
+        },
+        {
+          role: 'user',
+          content: `다음은 사용자의 요금제 관련 정보입니다. ${text} 이 사용자의 상황에 가장 적합한 LG U+ 요금제를 추천해주세요.
+요금제 이름만 말해주세요.`,
+        },
+      ];
+
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: messagesToSent,
+        temperature: 0,
+        stream: false,
+      });
+
+      const fullResponse = completion.choices[0]?.message?.content || '';
+
+      const allPlanTitles = (await Plan.find({}, 'title').lean()).map(
+        (p) => p.title
+      );
+
+      const sortedPlanTitles = allPlanTitles.sort(
+        (a, b) => b.length - a.length
+      );
+
+      let tempResponse = fullResponse;
+      const recommendedPlanTitles = [];
+
+      for (const title of sortedPlanTitles) {
+        if (tempResponse.includes(title)) {
+          recommendedPlanTitles.push(title);
+          tempResponse = tempResponse.replaceAll(title, '');
+        }
+      }
+
+      let recommendedPlansData = null;
+      if (recommendedPlanTitles.length > 0) {
+        recommendedPlansData = await Plan.find({
+          title: { $in: recommendedPlanTitles },
+        }).lean();
+        console.log(
+          `${recommendedPlanTitles.length}개의 추천 요금제 데이터를 DB에서 찾았습니다:`,
+          recommendedPlanTitles
+        );
+      }
+
+      socket.emit(SOCKET_EVENTS.STREAM_END, {
+        message: {
+          role: 'assistant',
+          content: fullResponse,
+          timestamp: new Date().toISOString(),
+        },
+        recommendedPlans: recommendedPlansData,
+      });
+
+      return;
+    }
 
     // 1. AI에게 전달할 최신 정보가 담긴 시스템 프롬프트를 동적으로 생성
     const dynamicSystemPrompt = await generateSystemPrompt();
@@ -89,7 +156,7 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
     console.log('스트림 데이터 수신 완료.');
 
     const allPlansFromDB = await Plan.find({}, 'title').lean();
-    const allPlanTitles = allPlansFromDB.map((plan) => plan.title); 
+    const allPlanTitles = allPlansFromDB.map((plan) => plan.title);
     const sortedPlanTitles = allPlanTitles.sort((a, b) => b.length - a.length);
 
     let tempResponse = fullResponse.replaceAll('**', '');

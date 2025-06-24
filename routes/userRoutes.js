@@ -3,6 +3,6 @@ import { getUserBenefits } from '../controllers/userController.js';
 
 const router = express.Router();
 
-router.get('/benefits/:name', getUserBenefits);
+router.get('/benefits/:id', getUserBenefits);
 
 export default router;

@@ -11,6 +11,7 @@ import { setupSocketConnection } from './handlers/socketHandlers.js';
 import authRoutes from './routes/authRoutes.js';
 import kakaoAuthRoutes from './routes/kakaoAuthRoutes.js';
 import apiRoutes from './routes/apiRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 // 환경 변수 로드
 dotenv.config();
@@ -48,6 +49,7 @@ app.use('/api/auth/kakao', kakaoAuthRoutes);
 // API 라우트 설정
 app.use('/api', apiRoutes);
 
+app.use('/api/user', userRoutes);
 // Socket.IO 연결 설정
 setupSocketConnection(io);
 

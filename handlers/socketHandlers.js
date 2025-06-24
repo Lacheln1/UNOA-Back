@@ -72,7 +72,7 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
       ];
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1',
         messages: messagesToSent,
         temperature: 0,
         stream: false,

@@ -1,6 +1,13 @@
 import express from 'express';
 
-import { getPlans, getConversationByIp, getConversationById, getAdminStats, checkHealth } from '../controllers/chatbotController.js';
+import {
+  getPlans,
+  comparePlansByAI,
+  getConversationByIp,
+  getConversationById,
+  getAdminStats,
+  checkHealth,
+} from '../controllers/chatbotController.js';
 
 const router = express.Router();
 
@@ -16,5 +23,8 @@ router.get('/conversations/:sessionId', getConversationById);
 
 // [Admin]
 router.get('/admin/stats', getAdminStats);
+
+//비교요약 
+router.post('/plans/compare', comparePlansByAI);
 
 export default router;

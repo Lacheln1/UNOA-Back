@@ -4,7 +4,7 @@ import Plan from '../models/Plan.js';
 
 export const getUserBenefits = async (req, res) => {
   try {
-    const user = await User.findOne({ name: req.params.name });
+    const user = await User.findOne({ _id: req.params.id });
     if (!user || !user.planInfo) {
       return res
         .status(404)

@@ -133,3 +133,29 @@ export const logoutUser = (req, res) => {
     .status(200)
     .json({ message: '로그아웃 되었습니다.' });
 };
+
+export const changePassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    // 새 비밀번호 해싱 후 저장
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: '비밀번호가 성공적으로 변경되었습니다.' });
+  } catch (error) {
+    console.error('비밀번호 변경 오류:', error);
+    return res
+      .status(500)
+      .json({ message: '서버 오류로 비밀번호 변경에 실패했습니다.' });
+  }
+};

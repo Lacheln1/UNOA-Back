@@ -19,26 +19,39 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? ['https://unoa.vercel.app', 'https://unoa-h-jukyungs-projects.vercel.app']
+    : [process.env.FRONTEND_URL];
+
 // Socket.IO 설정
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
 // 데이터베이스 연결
 await connectDatabase();
 
-const allowedOrigins =
-  process.env.NODE_ENV === 'production'
-    ? ['https://unoa.vercel.app'] // Vercel 배포 주소
-    : [process.env.FRONTEND_URL]; // 로컬 개발 주소
-
 // CORS 설정
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );

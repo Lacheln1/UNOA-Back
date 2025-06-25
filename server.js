@@ -30,10 +30,15 @@ const io = new Server(server, {
 // 데이터베이스 연결
 await connectDatabase();
 
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? ['https://unoa.vercel.app'] // Vercel 배포 주소
+    : [process.env.FRONTEND_URL]; // 로컬 개발 주소
+
 // CORS 설정
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
+    origin: allowedOrigins,
     credentials: true,
   })
 );

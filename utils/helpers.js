@@ -81,3 +81,12 @@ export const generateRandomPlanInfo = async () => {
     years,
   };
 };
+
+
+// 프롬프트의 토큰 사용량을 계산하고 콘솔에 출력하는 함수
+import { get_encoding } from 'tiktoken';
+const encoding = get_encoding('cl100k_base');
+export const logTokenUsage = (prompt, modeName) => {
+  const tokens = encoding.encode(prompt);
+  console.log(`[토큰 사용량] ${modeName} 프롬프트: 약 ${tokens.length}개 토큰`);
+};

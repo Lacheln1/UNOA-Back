@@ -24,7 +24,7 @@ router.get('/conversations/:sessionId', getConversationById);
 // [Admin]
 router.get('/admin/stats', getAdminStats);
 
-//비교요약 
+//비교요약
 router.post('/plans/compare', comparePlansByAI);
 
 export default router;

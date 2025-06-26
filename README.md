@@ -134,7 +134,7 @@
         </a>
         <div style="height:45px"></div>
          <hr/>
-        <p># 챗봇페이지(채팅모드)</p>
+        <p># 챗봇페이지(채팅모드) <br /># plan DB 연동</p>
       </td>
       <td align="center" valign="top">
         <a href="https://github.com/Lacheln1">

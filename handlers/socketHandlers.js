@@ -56,7 +56,6 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
     const sessionId = getSessionIdForUser(clientIP, userAgent);
 
     if (mode === 'simple') {
-      console.log('간단 모드 메시지 수신. AI 응답을 생성하지 않습니다.');
       const dynamicSystemPrompt = await generateSimpleModePrompt();
 
       const messagesToSent = [
@@ -72,7 +71,7 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
       ];
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4.1.mini',
+        model: 'gpt-4.1-mini',
         messages: messagesToSent,
         temperature: 0,
         stream: false,
@@ -103,10 +102,6 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
         recommendedPlansData = await Plan.find({
           title: { $in: recommendedPlanTitles },
         }).lean();
-        console.log(
-          `${recommendedPlanTitles.length}개의 추천 요금제 데이터를 DB에서 찾았습니다:`,
-          recommendedPlanTitles
-        );
       }
 
       socket.emit(SOCKET_EVENTS.STREAM_END, {
@@ -153,7 +148,6 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
         socket.emit(SOCKET_EVENTS.STREAM_CHUNK, content);
       }
     }
-    console.log('스트림 데이터 수신 완료.');
 
     const allPlansFromDB = await Plan.find({}, 'title').lean();
     const allPlanTitles = allPlansFromDB.map((plan) => plan.title);
@@ -175,9 +169,6 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
       recommendedPlansData = await Plan.find({
         title: { $in: recommendedPlanTitles },
       }).lean();
-      console.log(
-        `${recommendedPlansData.length}개의 추천 카드 데이터를 DB에서 찾았습니다.`
-      );
     }
 
     // 대화 저장 로직 (카드 데이터 생성 후)
@@ -206,7 +197,6 @@ const handleUserMessage = async (socket, data, clientIP, userAgent) => {
       },
       { upsert: true }
     );
-    console.log(`대화가 성공적으로 저장되었습니다: ${sessionId}`);
 
     socket.emit(SOCKET_EVENTS.STREAM_END, {
       message: {

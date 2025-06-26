@@ -66,7 +66,7 @@ export const kakaoCallback = async (req, res) => {
     const redirectURL = process.env.FRONTEND_URL || 'http://localhost:5173';
     res
       .cookie('access_token', token, cookieOptions)
-      .redirect(`${redirectURL}/`);
+      .redirect(`${redirectURL}/chatbot`);
   } catch (err) {
     console.error('사용자 정보 요청 실패:', err.response?.data || err.message);
     res

@@ -10,7 +10,7 @@
 [🔗팀노션](https://fern-cesium-085.notion.site/01-UNOA-You-know-NOA-203303b4c814802d9b9ad1fe21f34684?pvs=74)
 [🎨피그마](https://www.figma.com/design/KBt5oYt5mAsCMx3QqdSzt0/%EC%A2%85%ED%95%A9%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8_1%EC%A1%B0?t=YK1wDd3ggn1E3B6M-0)
 [🌐배포사이트](https://unoa.vercel.app/)
-[👨‍🏫발표자료]()
+[👨‍🏫발표자료](https://www.canva.com/design/DAGp_2T-YvA/76ixWLND28rb758k1Qf4FA/view?utm_content=DAGp_2T-YvA&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h50193cef40)
   
 ## 🏃‍♂️ 주요기능
 

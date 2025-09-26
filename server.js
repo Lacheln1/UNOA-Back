@@ -21,7 +21,7 @@ const server = http.createServer(app);
 
 const allowedOrigins =
   process.env.NODE_ENV === 'production'
-    ? ['https://unoa.vercel.app', 'https://unoa-h-jukyungs-projects.vercel.app']
+    ? [ 'https://unoa-front.vercel.app','https://unoa.vercel.app', 'https://unoa-h-jukyungs-projects.vercel.app']
     : [process.env.FRONTEND_URL];
 
 // Socket.IO 설정

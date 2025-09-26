@@ -5,9 +5,6 @@ import dotenv from 'dotenv';
 
 // 로컬 모듈 import
 import { connectDatabase } from './config/database.js';
-import authRoutes from './routes/authRoutes.js';
-import apiRoutes from './routes/apiRoutes.js';
-import userRoutes from './routes/userRoutes.js';
 
 // 환경 변수 로드
 dotenv.config();
@@ -90,10 +87,40 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// 라우터 연결
-app.use('/api/auth', authRoutes);
-app.use('/api', apiRoutes);
-app.use('/api/user', userRoutes);
+console.log('✅ 기본 라우트 설정 완료');
+
+// 라우트를 하나씩 테스트 - 단계 1: API 라우트만
+try {
+  console.log('🔄 API 라우트 로딩 시도...');
+  const apiRoutes = await import('./routes/apiRoutes.js');
+  app.use('/api', apiRoutes.default);
+  console.log('✅ API 라우트 로딩 성공');
+} catch (error) {
+  console.error('❌ API 라우트 로딩 실패:', error.message);
+  console.error('스택 트레이스:', error.stack);
+}
+
+// // 단계 2: 이 부분은 주석 처리해서 API 라우트만 먼저 테스트
+// try {
+//   console.log('🔄 Auth 라우트 로딩 시도...');
+//   const authRoutes = await import('./routes/authRoutes.js');
+//   app.use('/api/auth', authRoutes.default);
+//   console.log('✅ Auth 라우트 로딩 성공');
+// } catch (error) {
+//   console.error('❌ Auth 라우트 로딩 실패:', error.message);
+//   console.error('스택 트레이스:', error.stack);
+// }
+
+// // 단계 3: 이 부분도 주석 처리
+// try {
+//   console.log('🔄 User 라우트 로딩 시도...');
+//   const userRoutes = await import('./routes/userRoutes.js');
+//   app.use('/api/user', userRoutes.default);
+//   console.log('✅ User 라우트 로딩 성공');
+// } catch (error) {
+//   console.error('❌ User 라우트 로딩 실패:', error.message);
+//   console.error('스택 트레이스:', error.stack);
+// }
 
 // 404 핸들러
 app.use('*', (req, res) => {
